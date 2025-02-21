@@ -8,7 +8,7 @@ class GbmError(Exception):
     pass
 
 class GbmBufferObject:
-    def __init__(self, bo_ptr, parent=None):
+    def __init__(self, bo_ptr, parent: GbmDevice | GbmSurface):
         if not bo_ptr:
             raise GbmError('Failed to create GBM buffer object')
         self._bo = bo_ptr
@@ -64,8 +64,9 @@ class GbmBufferObject:
         self.close()
 
 class GbmSurface:
-    def __init__(self, surface):
+    def __init__(self, surface, parent: GbmDevice):
         self._surface = surface
+        self._parent = parent
         self._current_bo = None
         self._closed = False
 
@@ -135,19 +136,19 @@ class GbmDevice:
         bo = gb.gbm_bo_create(self._device, width, height, format, flags)
         if not bo:
             raise GbmError('Failed to create GBM buffer object')
-        return GbmBufferObject(bo)
+        return GbmBufferObject(bo, self)
 
     def create_buffer_object_with_modifiers(self, width: int, height: int, format: int, modifiers: list[int]) -> GbmBufferObject:
         bo = gb.gbm_bo_create_with_modifiers(self._device, width, height, format, modifiers)
         if not bo:
             raise GbmError('Failed to create GBM buffer object with modifiers')
-        return GbmBufferObject(bo)
+        return GbmBufferObject(bo, self)
 
     def create_surface(self, width: int, height: int, format: int, flags: int) -> GbmSurface:
         surface = gb.gbm_surface_create(self._device, width, height, format, flags)
         if not surface:
             raise GbmError('Failed to create GBM surface')
-        return GbmSurface(surface)
+        return GbmSurface(surface, self)
 
     def close(self):
         if not self._closed and self._device:
