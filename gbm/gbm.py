@@ -8,12 +8,13 @@ class GbmError(Exception):
     pass
 
 class GbmBufferObject:
-    def __init__(self, bo_ptr, parent: GbmDevice | GbmSurface):
+    def __init__(self, bo_ptr, parent: GbmDevice | GbmSurface, destroy_on_close: bool):
         if not bo_ptr:
             raise GbmError('Failed to create GBM buffer object')
         self._bo = bo_ptr
         self._parent = parent
         self._closed = False
+        self.destroy_on_close = destroy_on_close
 
     @property
     def width(self) -> int:
@@ -50,9 +51,9 @@ class GbmBufferObject:
             os.close(fd)
 
     def close(self):
-        if not self._closed and self._bo and not self._parent:
+        if not self._closed and self._bo and self.destroy_on_close:
             gb.gbm_bo_destroy(self._bo)
-            self._closed = True
+        self._closed = True
 
     def __enter__(self):
         return self
@@ -78,7 +79,7 @@ class GbmSurface:
         bo = gb.gbm_surface_lock_front_buffer(self._surface)
         if not bo:
             raise GbmError('Failed to lock front buffer')
-        self._current_bo = GbmBufferObject(bo, self)
+        self._current_bo = GbmBufferObject(bo, self, destroy_on_close=False)
         return self._current_bo
 
     def release_buffer(self, bo: GbmBufferObject):
@@ -136,13 +137,13 @@ class GbmDevice:
         bo = gb.gbm_bo_create(self._device, width, height, format, flags)
         if not bo:
             raise GbmError('Failed to create GBM buffer object')
-        return GbmBufferObject(bo, self)
+        return GbmBufferObject(bo, self, destroy_on_close=True)
 
     def create_buffer_object_with_modifiers(self, width: int, height: int, format: int, modifiers: list[int]) -> GbmBufferObject:
         bo = gb.gbm_bo_create_with_modifiers(self._device, width, height, format, modifiers)
         if not bo:
             raise GbmError('Failed to create GBM buffer object with modifiers')
-        return GbmBufferObject(bo, self)
+        return GbmBufferObject(bo, self, destroy_on_close=True)
 
     def create_surface(self, width: int, height: int, format: int, flags: int) -> GbmSurface:
         surface = gb.gbm_surface_create(self._device, width, height, format, flags)
