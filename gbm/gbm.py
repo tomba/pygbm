@@ -140,7 +140,10 @@ class GbmDevice:
         return GbmBufferObject(bo, self, destroy_on_close=True)
 
     def create_buffer_object_with_modifiers(self, width: int, height: int, format: int, modifiers: list[int]) -> GbmBufferObject:
-        bo = gb.gbm_bo_create_with_modifiers(self._device, width, height, format, modifiers)
+        count = len(modifiers)
+        mod_array = (gb.ctypes.c_uint64 * count)(*modifiers)
+
+        bo = gb.gbm_bo_create_with_modifiers(self._device, width, height, format, mod_array, count)
         if not bo:
             raise GbmError('Failed to create GBM buffer object with modifiers')
         return GbmBufferObject(bo, self, destroy_on_close=True)
