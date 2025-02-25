@@ -37,6 +37,7 @@ class GbmBufferObject:
         return gb.gbm_bo_get_handle(self._bo).u32
 
     def get_fd(self) -> int:
+        """Get the file descriptor for the buffer object. The caller is responsible for closing the FD."""
         fd = gb.gbm_bo_get_fd(self._bo)
         if fd < 0:
             raise GbmError('Failed to get buffer FD')
@@ -44,6 +45,7 @@ class GbmBufferObject:
 
     @contextmanager
     def fd(self):
+        """Context manager for the buffer object's file descriptor."""
         fd = self.get_fd()
         try:
             yield fd
