@@ -32,6 +32,7 @@ Repository = 'https://github.com/tomba/pygbm.git'
 
 [project.optional-dependencies]
 test = ['pytest']
+all = ['pygbm[test]']
 
 [tool.setuptools]
 packages = ['gbm', 'gbm.capi']
