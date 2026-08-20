@@ -7,7 +7,7 @@ name = "pygbm"
 version = "0.1"
 dependencies = [
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 authors = [
   {name = "Tomi Valkeinen", email = "tomi.valkeinen@ideasonboard.com"},
 ]
