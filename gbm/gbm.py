@@ -9,6 +9,7 @@ import gbm.capi.gbm as gb
 class GbmError(Exception):
     pass
 
+
 class GbmBufferObject:
     def __init__(self, bo_ptr, parent: GbmDevice | GbmSurface, destroy_on_close: bool):
         if not bo_ptr:
@@ -68,6 +69,7 @@ class GbmBufferObject:
     def __del__(self):
         self.close()
 
+
 class GbmSurface:
     def __init__(self, surface, parent: GbmDevice):
         self._surface = surface
@@ -111,6 +113,7 @@ class GbmSurface:
     def __del__(self):
         self.close()
 
+
 class GbmDevice:
     def __init__(self, fd: int):
         self._device = gb.gbm_create_device(fd)
@@ -137,13 +140,17 @@ class GbmDevice:
     def get_format_modifier_plane_count(self, format: int, modifier: int) -> int:
         return gb.gbm_device_get_format_modifier_plane_count(self._device, format, modifier)
 
-    def create_buffer_object(self, width: int, height: int, format: int, flags: int) -> GbmBufferObject:
+    def create_buffer_object(
+        self, width: int, height: int, format: int, flags: int
+    ) -> GbmBufferObject:
         bo = gb.gbm_bo_create(self._device, width, height, format, flags)
         if not bo:
             raise GbmError('Failed to create GBM buffer object')
         return GbmBufferObject(bo, self, destroy_on_close=True)
 
-    def create_buffer_object_with_modifiers(self, width: int, height: int, format: int, modifiers: list[int]) -> GbmBufferObject:
+    def create_buffer_object_with_modifiers(
+        self, width: int, height: int, format: int, modifiers: list[int]
+    ) -> GbmBufferObject:
         count = len(modifiers)
         mod_array = (gb.ctypes.c_uint64 * count)(*modifiers)
 
@@ -171,6 +178,7 @@ class GbmDevice:
 
     def __del__(self):
         self.close()
+
 
 # Re-export format and flag constants
 GBM_FORMAT_XRGB8888 = gb.GBM_BO_FORMAT_XRGB8888

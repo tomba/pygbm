@@ -9,9 +9,7 @@ CTYPESGEN_PATH = '/home/tomba/work/ctypesgen/'
 
 INCLUDE_PATH = '/usr/include'
 
-INCLUDES = (
-    f'{INCLUDE_PATH}/gbm.h',
-)
+INCLUDES = (f'{INCLUDE_PATH}/gbm.h',)
 
 OUT = 'gbm/capi/gbm.py'
 
@@ -30,6 +28,7 @@ argv = [*CTYPESGEN_OPTS, f'-I{INCLUDE_PATH}', f'-o{OUT}', '-i', *INCLUDES]
 
 main(argv)
 
+
 def replace(filename, replaces):
     for r in replaces:
         pat = r[0]
@@ -43,9 +42,17 @@ def replace(filename, replaces):
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(content)
 
+
 # Fix _IOC by using ord(type)
 
-replace(OUT, [
-        (re.escape('return (((uint32_t(a).value | (uint32_t(b).value << 8)) | (uint32_t(c).value << 16)) | (uint32_t(d).value << 24))'),
-         'return (((uint32_t(ord(a)).value | (uint32_t(ord(b)).value << 8)) | (uint32_t(ord(c)).value << 16)) | (uint32_t(ord(d)).value << 24))'),
-        ])
+replace(
+    OUT,
+    [
+        (
+            re.escape(
+                'return (((uint32_t(a).value | (uint32_t(b).value << 8)) | (uint32_t(c).value << 16)) | (uint32_t(d).value << 24))'
+            ),
+            'return (((uint32_t(ord(a)).value | (uint32_t(ord(b)).value << 8)) | (uint32_t(ord(c)).value << 16)) | (uint32_t(ord(d)).value << 24))',
+        ),
+    ],
+)
