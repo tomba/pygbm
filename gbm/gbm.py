@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
+
 import gbm.capi.gbm as gb
+
 
 class GbmError(Exception):
     pass
