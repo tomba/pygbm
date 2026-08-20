@@ -33,6 +33,9 @@ Repository = 'https://github.com/tomba/pygbm.git'
 [tool.setuptools]
 packages = ['gbm', 'gbm.capi']
 
+[tool.pytest.ini_options]
+testpaths = ['tests']
+
 [tool.ruff]
 line-length = 100
 extend-exclude = ['gbm/capi/']
