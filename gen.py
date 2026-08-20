@@ -22,7 +22,7 @@ CTYPESGEN_OPTS = (
 
 sys.path.insert(0, CTYPESGEN_PATH)
 sys.path.insert(0, CTYPESGEN_PATH + 'src')
-from ctypesgen.__main__ import main  # pylint: disable=E,C # type: ignore  # noqa: E402
+from ctypesgen.__main__ import main  # type: ignore  # noqa: E402
 
 argv = [*CTYPESGEN_OPTS, f'-I{INCLUDE_PATH}', f'-o{OUT}', '-i', *INCLUDES]
 
